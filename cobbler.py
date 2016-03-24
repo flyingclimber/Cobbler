@@ -4,10 +4,10 @@
     cobbler.py - Dedicated IPS patching worker
 """
 
-import ips
 import csv
 import argparse
 from rom import Rom, RomLayout, TileLayout
+from ips import Ips, Hunk
 
 PARSER = argparse.ArgumentParser(description='IPS patch creator')
 PARSER.add_argument('--serial', dest='serial', default='DMG-NDJ',
@@ -27,7 +27,7 @@ class Cobbler:
     def __init__(self, csv_input, serial):
         self.input = csv_input
         self.serial = serial
-        self.ips = ips.Ips()
+        self.ips = Ips()
 
     def parse_csv(self):
         """
@@ -40,7 +40,7 @@ class Cobbler:
                 if row['Start']:
                     update = Update(row['Start'], row['End'], row['Edited'])
                     update.byte_data = update.convert_to_tile(self.serial)
-                    hunk = ips.Hunk(update.start, update.end, update.byte_data)
+                    hunk = Hunk(update.start, update.end, update.byte_data)
                     self.ips.add_hunk(hunk)
 
     def write_patch(self):
@@ -68,13 +68,13 @@ class Update:
         """
             Given an Update object translate char to tile values
         """
-        tile_layout = TileLayout(serial)
-        rom_layout = RomLayout(serial)
+        tile_layout = TileLayout()
+        rom_layout = RomLayout()
         tile_set = rom_layout.get_tile_set(serial, self.start)
         res = bytearray()
 
         for char in self.data:
-            res.append(tile_layout.get_hex(char, tile_set))
+            res.append(tile_layout.get_hex(serial, char, tile_set))
 
         return res
 

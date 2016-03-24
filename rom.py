@@ -17,8 +17,8 @@ class Rom:
     """
     def __init__(self, serial):
         self.serial = serial
-        self.rom_layout = RomLayout(serial)
-        self.tile_layout = TileLayout(serial)
+        self.rom_layout = RomLayout()
+        self.tile_layout = TileLayout()
 
     def __str__(self):
         return self.serial
@@ -28,9 +28,7 @@ class RomLayout:
     """
         Layout table that maps rom address to a tile set
     """
-    def __init__(self, serial):
-        self.serial = serial
-
+    def __init__(self):
         with open(DATA_DIR + "/" + ROM_LAYOUT_JSON, 'r') as layout_file:
             self.mapping = json.load(layout_file)
 
@@ -51,14 +49,12 @@ class TileLayout:
     """
         Layout table that maps tiles to decimal values
     """
-    def __init__(self, serial):
-        self.serial = serial
-
+    def __init__(self):
         with open(DATA_DIR + "/" + TILE_LAYOUT_JSON, 'r') as layout_file:
             self.mapping = json.load(layout_file)
 
-    def get_hex(self, char, tile_set):
+    def get_hex(self, serial, char, tile_set):
         """
             Return the decimal tile mapping for a character using a tile
         """
-        return self.mapping[self.serial][tile_set][char.upper()]
+        return self.mapping[serial][tile_set][char.upper()]
