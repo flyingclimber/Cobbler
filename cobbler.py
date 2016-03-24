@@ -35,6 +35,12 @@ class Cobbler:
                     print update
                     print update.convert_to_tile()
 
+    def write_patch(self):
+        """
+            Write out the IPS patch file
+        """
+        self.ips.create_patch()
+
 
 class Update:
     """
@@ -113,6 +119,7 @@ def main():
     """
     cobbler = Cobbler(CSV)
     cobbler.parse_csv()
+    cobbler.write_patch()
 
 if __name__ == "__main__":
     main()
