@@ -63,23 +63,3 @@ class Hunk:
         self.offset = offset
         self.size = size
         self.data = data
-
-
-def main():
-    """
-        Main runner
-    """
-    patch = Ips()
-    h1_ = Hunk(bytearray([10]),
-               bytearray([2]),
-               bytearray([50, 50, 100, 104]))
-    h2_ = Hunk(bytearray([20]),
-               bytearray([50]),
-               bytearray([10, 10, 20, 30, 40, 50, 255]))
-    patch.add_hunk(h1_)
-    patch.add_hunk(h2_)
-    patch.create_patch()
-
-
-if __name__ == "__main__":
-    main()
