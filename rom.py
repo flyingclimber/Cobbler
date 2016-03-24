@@ -41,9 +41,9 @@ class RomLayout:
         for rom_range in self.mapping[serial]:
             start = int(self.mapping[serial][rom_range]['start'], 16)
             end = int(self.mapping[serial][rom_range]['end'], 16)
-            address = int(address, 16)
+            address_ = int(address, 16)
 
-            if start <= address <= end:
+            if start <= address_ <= end:
                 return self.mapping[serial][rom_range]['tile_set']
 
 
