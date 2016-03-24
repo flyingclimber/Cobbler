@@ -15,6 +15,9 @@ class Patch:
         pass
 
     def create_patch(self):
+        """
+            Write a patch file to disk
+        """
         pass
 
 
@@ -41,15 +44,15 @@ class Ips(Patch):
         """
             Output a final patch to disk
         """
-        with open(PATCH, 'wb') as f:
-            f.write(self.header)
+        with open(PATCH, 'wb') as patch_file:
+            patch_file.write(self.header)
 
             for hunk in self.hunks:
-                f.write(hunk.offset)
-                f.write(hunk.size)
-                f.write(hunk.data)
+                patch_file.write(hunk.offset)
+                patch_file.write(hunk.size)
+                patch_file.write(hunk.data)
 
-            f.write(self.footer)
+            patch_file.write(self.footer)
 
 
 class Hunk:
