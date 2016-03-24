@@ -4,8 +4,6 @@
     ips.py - IPS patch creator
 """
 
-PATCH = 'test.ips'
-
 
 class Patch:
     """
@@ -40,11 +38,11 @@ class Ips(Patch):
         else:
             print "Skipping: No offset given"
 
-    def create_patch(self):
+    def create_patch(self, file_name):
         """
             Output a final patch to disk
         """
-        with open(PATCH, 'wb') as patch_file:
+        with open(file_name, 'wb') as patch_file:
             patch_file.write(self.header)
 
             for hunk in self.hunks:

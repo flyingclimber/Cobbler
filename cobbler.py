@@ -14,6 +14,8 @@ PARSER.add_argument('--serial', dest='serial', default='DMG-NDJ',
                     help='ROM serial')
 PARSER.add_argument('--csv', dest='csv', nargs='+', default=['Nekketsu.csv'],
                     help='CSV input list')
+PARSER.add_argument('--patch', dest='patch', default='test.ips',
+                    help='Patch file name')
 
 ARGS = PARSER.parse_args()
 
@@ -45,7 +47,7 @@ class Cobbler:
         """
             Write out the IPS patch file
         """
-        self.ips.create_patch()
+        self.ips.create_patch(ARGS.patch)
 
 
 class Update:
