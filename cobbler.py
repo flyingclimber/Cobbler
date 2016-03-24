@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+    cobbler.py - Dedicated IPS patching worker
+"""
+
 import ips
 import csv
 import json
@@ -19,6 +23,9 @@ class Cobbler:
         self.ips = ips.Ips()
 
     def parse_csv(self):
+        """
+            Given a csv create Updates and fetch tiles
+        """
         with open(self.csv, 'rb') as g:
             reader = csv.DictReader(g)
 
@@ -30,6 +37,9 @@ class Cobbler:
 
 
 class Update:
+    """
+        Internal object to track patch attributes and tile table translations
+    """
     def __init__(self, start, end, data):
         self.start = start
         self.end = end
@@ -39,6 +49,9 @@ class Update:
         return '{}-{} {}'.format(self.start, self.end, self.data)
 
     def convert_to_tile(self):
+        """
+            Given an Update object translate char to tile values
+        """
         tile_layout = TileLayout('DMG-NDJ')
         rom_layout = RomLayout('DMG-NDJ')
         tile_set = rom_layout.get_tile_set('DMG-NDJ', self.start)
@@ -51,6 +64,9 @@ class Update:
 
 
 class Rom:
+    """
+        Game we are patching
+    """
     def __init__(self, serial):
         self.serial = serial
         self.rom_layout = RomLayout(serial)
@@ -58,17 +74,26 @@ class Rom:
 
 
 class RomLayout:
+    """
+        Layout table that maps rom address to a tile set
+    """
     def __init__(self, serial):
         with open(DATA_DIR + "/" + ROM_LAYOUT_JSON, 'r') as g:
             self.mapping = json.load(g)
 
     def get_tile_set(self, serial, address):
+        """
+            Return the tile set that maps to the given address
+        """
         for rom_range in self.mapping[serial]:
             if int(self.mapping[serial][rom_range]['start'], 16) <= int(address, 16) <= int(self.mapping[serial][rom_range]['end'], 16):
                 return self.mapping[serial][rom_range]['tile_set']
 
 
 class TileLayout:
+    """
+        Layout table that maps tiles to decimal values
+    """
     def __init__(self, serial):
         self.serial = serial
 
@@ -76,10 +101,16 @@ class TileLayout:
             self.mapping = json.load(g)
 
     def get_hex(self, char, tile_set):
+        """
+            Return the decimal tile mapping for a character using a tile
+        """
         return self.mapping[self.serial][tile_set][char.upper()]
 
 
 def main():
+    """
+        Main driver
+    """
     cobbler = Cobbler(CSV)
     cobbler.parse_csv()
 
