@@ -5,6 +5,7 @@ import csv
 import json
 
 CSV = 'Nekketsu.csv'
+DATA_DIR = 'data'
 TILE_LAYOUT_JSON = 'tile_layout.json'
 ROM_LAYOUT_JSON = 'rom_layout.json'
 
@@ -58,7 +59,7 @@ class Rom:
 
 class RomLayout:
     def __init__(self, serial):
-        with open(ROM_LAYOUT_JSON, 'r') as g:
+        with open(DATA_DIR + "/" + ROM_LAYOUT_JSON, 'r') as g:
             self.mapping = json.load(g)
 
     def get_tile_set(self, serial, address):
@@ -71,7 +72,7 @@ class TileLayout:
     def __init__(self, serial):
         self.serial = serial
 
-        with open(TILE_LAYOUT_JSON, 'r') as g:
+        with open(DATA_DIR + "/" + TILE_LAYOUT_JSON, 'r') as g:
             self.mapping = json.load(g)
 
     def get_hex(self, char, tile_set):
