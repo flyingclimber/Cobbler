@@ -8,7 +8,7 @@ import ips
 import csv
 import json
 
-CSV = 'Nekketsu.csv'
+CSV_LIST = ['Nekketsu.csv']
 DATA_DIR = 'data'
 TILE_LAYOUT_JSON = 'tile_layout.json'
 ROM_LAYOUT_JSON = 'rom_layout.json'
@@ -117,9 +117,10 @@ def main():
     """
         Main driver
     """
-    cobbler = Cobbler(CSV)
-    cobbler.parse_csv()
-    cobbler.write_patch()
+    for csv_file in CSV_LIST:
+        cobbler = Cobbler(csv_file)
+        cobbler.parse_csv()
+        cobbler.write_patch()
 
 if __name__ == "__main__":
     main()
