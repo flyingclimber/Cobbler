@@ -26,8 +26,8 @@ class Cobbler:
         """
             Given a csv create Updates and fetch tiles
         """
-        with open(self.csv, 'rb') as g:
-            reader = csv.DictReader(g)
+        with open(self.csv, 'rb') as csv_file:
+            reader = csv.DictReader(csv_file)
 
             for row in reader:
                 if row['Start']:
@@ -78,8 +78,8 @@ class RomLayout:
         Layout table that maps rom address to a tile set
     """
     def __init__(self, serial):
-        with open(DATA_DIR + "/" + ROM_LAYOUT_JSON, 'r') as g:
-            self.mapping = json.load(g)
+        with open(DATA_DIR + "/" + ROM_LAYOUT_JSON, 'r') as layout_file:
+            self.mapping = json.load(layout_file)
 
     def get_tile_set(self, serial, address):
         """
@@ -97,8 +97,8 @@ class TileLayout:
     def __init__(self, serial):
         self.serial = serial
 
-        with open(DATA_DIR + "/" + TILE_LAYOUT_JSON, 'r') as g:
-            self.mapping = json.load(g)
+        with open(DATA_DIR + "/" + TILE_LAYOUT_JSON, 'r') as layout_file:
+            self.mapping = json.load(layout_file)
 
     def get_hex(self, char, tile_set):
         """
