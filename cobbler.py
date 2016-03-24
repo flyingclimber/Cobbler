@@ -6,10 +6,16 @@
 
 import ips
 import csv
+import argparse
 from rom import Rom, RomLayout, TileLayout
 
-ROM_SERIAL = 'DMG-NDJ'
-CSV_LIST = ['Nekketsu.csv']
+PARSER = argparse.ArgumentParser(description='IPS patch creator')
+PARSER.add_argument('--serial', dest='serial', default='DMG-NDJ',
+                    help='ROM serial')
+PARSER.add_argument('--csv', dest='csv', nargs='+', default=['Nekketsu.csv'],
+                    help='CSV input list')
+
+ARGS = PARSER.parse_args()
 
 
 class Cobbler:
@@ -75,8 +81,8 @@ def main():
     """
         Main driver
     """
-    for csv_file in CSV_LIST:
-        cobbler = Cobbler(csv_file, ROM_SERIAL)
+    for csv_file in ARGS.csv:
+        cobbler = Cobbler(csv_file, ARGS.serial)
         cobbler.parse_csv()
         cobbler.write_patch()
 
