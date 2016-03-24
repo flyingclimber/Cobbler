@@ -19,8 +19,8 @@ class Cobbler:
     """
         Someone to put it all together
     """
-    def __init__(self, csv, serial):
-        self.csv = csv
+    def __init__(self, csv_input, serial):
+        self.input = csv_input
         self.serial = serial
         self.ips = ips.Ips()
 
@@ -28,7 +28,7 @@ class Cobbler:
         """
             Given a csv create Updates and fetch tiles
         """
-        with open(self.csv, 'rb') as csv_file:
+        with open(self.input, 'rb') as csv_file:
             reader = csv.DictReader(csv_file)
 
             for row in reader:
@@ -53,6 +53,8 @@ class Update:
         self.start = start
         self.end = end
         self.data = data
+        self.byte_data = bytearray()
+        self.length = len(end) - len(start)
 
     def __str__(self):
         return '{}-{} {}'.format(self.start, self.end, self.data)
@@ -81,12 +83,17 @@ class Rom:
         self.rom_layout = RomLayout(serial)
         self.tile_layout = TileLayout(serial)
 
+    def __str__(self):
+        return self.serial
+
 
 class RomLayout:
     """
         Layout table that maps rom address to a tile set
     """
     def __init__(self, serial):
+        self.serial = serial
+
         with open(DATA_DIR + "/" + ROM_LAYOUT_JSON, 'r') as layout_file:
             self.mapping = json.load(layout_file)
 
