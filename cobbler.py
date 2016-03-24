@@ -8,6 +8,7 @@ import ips
 import csv
 import json
 
+ROM_SERIAL = 'DMG-NDJ'
 CSV_LIST = ['Nekketsu.csv']
 DATA_DIR = 'data'
 TILE_LAYOUT_JSON = 'tile_layout.json'
@@ -18,8 +19,9 @@ class Cobbler:
     """
         Someone to put it all together
     """
-    def __init__(self, csv):
+    def __init__(self, csv, serial):
         self.csv = csv
+        self.serial = serial
         self.ips = ips.Ips()
 
     def parse_csv(self):
@@ -32,8 +34,9 @@ class Cobbler:
             for row in reader:
                 if row['Start']:
                     update = Update(row['Start'], row['End'], row['Edited'])
-                    print update
-                    print update.convert_to_tile()
+                    update.byte_data = update.convert_to_tile(self.serial)
+                    hunk = ips.Hunk(update.start, update.end, update.byte_data)
+                    self.ips.add_hunk(hunk)
 
     def write_patch(self):
         """
@@ -54,13 +57,13 @@ class Update:
     def __str__(self):
         return '{}-{} {}'.format(self.start, self.end, self.data)
 
-    def convert_to_tile(self):
+    def convert_to_tile(self, serial):
         """
             Given an Update object translate char to tile values
         """
-        tile_layout = TileLayout('DMG-NDJ')
-        rom_layout = RomLayout('DMG-NDJ')
-        tile_set = rom_layout.get_tile_set('DMG-NDJ', self.start)
+        tile_layout = TileLayout(serial)
+        rom_layout = RomLayout(serial)
+        tile_set = rom_layout.get_tile_set(serial, self.start)
         res = bytearray()
 
         for char in self.data:
@@ -120,7 +123,7 @@ def main():
         Main driver
     """
     for csv_file in CSV_LIST:
-        cobbler = Cobbler(csv_file)
+        cobbler = Cobbler(csv_file, ROM_SERIAL)
         cobbler.parse_csv()
         cobbler.write_patch()
 
