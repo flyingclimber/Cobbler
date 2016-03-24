@@ -92,7 +92,9 @@ class RomLayout:
             Return the tile set that maps to the given address
         """
         for rom_range in self.mapping[serial]:
-            if int(self.mapping[serial][rom_range]['start'], 16) <= int(address, 16) <= int(self.mapping[serial][rom_range]['end'], 16):
+            if int(self.mapping[serial][rom_range]['start'], 16) <= \
+                    int(address, 16) <= \
+                    int(self.mapping[serial][rom_range]['end'], 16):
                 return self.mapping[serial][rom_range]['tile_set']
 
 
