@@ -59,7 +59,7 @@ class Update:
         self.end = end
         self.data = data
         self.byte_data = bytearray()
-        self.length = len(end) - len(start)
+        self.length = len(end) - len(start) - 1
 
     def __str__(self):
         return '{}-{} {}'.format(self.start, self.end, self.data)
