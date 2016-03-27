@@ -15,13 +15,9 @@ class Rom:
     """
         Game we are patching
     """
-    def __init__(self, serial):
-        self.serial = serial
+    def __init__(self):
         self.rom_layout = RomLayout()
         self.tile_layout = TileLayout()
-
-    def __str__(self):
-        return self.serial
 
 
 class RomLayout:
@@ -37,11 +33,11 @@ class RomLayout:
             Return the tile set that maps to the given address
         """
         for rom_range in self.mapping[serial]:
-            start = int(self.mapping[serial][rom_range]['start'], 16)
-            end = int(self.mapping[serial][rom_range]['end'], 16)
-            address_ = int(address, 16)
+            start = int(self.mapping[serial][rom_range]['start'], 16),
+            end = int(self.mapping[serial][rom_range]['end'], 16),
+            address_ = address
 
-            if start <= address_ <= end:
+            if start[0] <= address_ <= end[0]:
                 return self.mapping[serial][rom_range]['tile_set']
 
 
@@ -55,6 +51,10 @@ class TileLayout:
 
     def get_hex(self, serial, char, tile_set):
         """
-            Return the decimal tile mapping for a character using a tile
+            Return the decimal tile mapping for a character using a tile set
         """
-        return self.mapping[serial][tile_set][char.upper()]
+        try:
+            return self.mapping[serial][tile_set][char.upper()]
+        except KeyError:
+            print '{} char not found'.format(char)
+
