@@ -4,6 +4,8 @@
     ips.py - IPS patch creator
 """
 
+import struct
+
 
 class Patch:
     """
@@ -12,7 +14,7 @@ class Patch:
     def __init__(self):
         pass
 
-    def create_patch(self):
+    def create_patch(self, file_name):
         """
             Write a patch file to disk
         """
@@ -58,6 +60,6 @@ class Hunk:
         Individual IPS record
     """
     def __init__(self, offset, size, data):
-        self.offset = offset
-        self.size = size
+        self.offset = struct.pack('>L', offset)
+        self.size = struct.pack('>H', size)
         self.data = data
