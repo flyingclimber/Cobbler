@@ -43,7 +43,7 @@ class Cobbler:
                                     int(row['End'], 16),
                                     row['Edited'])
                     update.byte_data = update.convert_to_tile(self.serial)
-                    hunk = Hunk(update.start, update.end, update.byte_data)
+                    hunk = Hunk(update.start, update.length, update.byte_data)
                     self.ips.add_hunk(hunk)
 
     def write_patch(self):
@@ -62,7 +62,7 @@ class Update:
         self.end = end
         self.data = data
         self.byte_data = bytearray()
-        self.length = len(end) - len(start)
+        self.length = len(data)
 
     def __str__(self):
         return '{}-{} {}'.format(self.start, self.end, self.data)
