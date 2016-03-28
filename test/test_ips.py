@@ -32,13 +32,13 @@ class IpsTestCase(unittest.TestCase):
         """
             Tests creating a patch with preset values and reading them back
         """
-        offset = bytearray([10])
-        size = bytearray([2])
+        offset = 0x19
+        size = 4
         data = bytearray([50, 50, 100, 104])
         h1_ = Hunk(offset, size, data)
 
-        self.assertEqual(h1_.offset, offset)
-        self.assertEqual(h1_.size, size)
+        self.assertEqual(h1_.offset, '\x00\x00\x19')
+        self.assertEqual(h1_.size, '\x00\x04')
         self.assertEqual(h1_.data, data)
 
     def test_can_add_hunk(self):
@@ -46,8 +46,8 @@ class IpsTestCase(unittest.TestCase):
             Add a hunk to the ips file and read it back
         """
         patch = Ips()
-        offset = bytearray([10])
-        size = bytearray([2])
+        offset = 0x10
+        size = 4
         data = bytearray([50, 50, 100, 104])
         h1_ = Hunk(offset, size, data)
         patch.add_hunk(h1_)
