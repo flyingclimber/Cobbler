@@ -60,6 +60,6 @@ class Hunk:
         Individual IPS record
     """
     def __init__(self, offset, size, data):
-        self.offset = struct.pack('>L', offset)
+        self.offset = struct.pack(">BH", *divmod(offset, 1 << 16))
         self.size = struct.pack('>H', size)
         self.data = data
