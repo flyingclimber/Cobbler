@@ -52,9 +52,13 @@ class Cobbler:
             Given a xlsx create Updates and fetch tiles
         """
         wb_ = load_workbook(self.input)
-        sheet_titles = ['Main Story', 'Title Screen',
-                        'Story Mode Character Select', 'Stage 3-4 Story',
-                        'Stage 6-7 Story', 'Ending']
+        progress_sheet = wb_.get_sheet_by_name('Project Progress')
+        cells = progress_sheet['A2:E9']
+        sheet_titles = []
+
+        for cell in cells:
+            if cell[4].value == 'Y':
+                sheet_titles.append(cell[0].value)
 
         for sheet_name in sheet_titles:
             sheet = wb_.get_sheet_by_name(sheet_name)
