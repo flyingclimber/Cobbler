@@ -9,16 +9,20 @@ import argparse
 from rom import Rom, RomLayout, TileLayout
 from ips import Ips, Hunk
 from openpyxl import load_workbook
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 
 PARSER = argparse.ArgumentParser(description='IPS patch creator')
 PARSER.add_argument('--serial', dest='serial', default='DMG-NDJ',
                     help='ROM serial')
+PARSER.add_argument('--download', action='store_true', help='Download XLSX')
 PARSER.add_argument('--csv', dest='csv', nargs='+', help='CSV input list')
 PARSER.add_argument('--xlsx', dest='xlsx', help='XLSX input list')
 PARSER.add_argument('--patch', dest='patch', default='test.ips',
                     help='Patch file name')
 
 ARGS = PARSER.parse_args()
+GAUTH_CREDS_FILE = 'creds.txt'
 
 
 class Cobbler:
@@ -79,6 +83,29 @@ class Cobbler:
         """
         self.ips.create_patch(ARGS.patch)
 
+    def download_xlsx(self, file_name):
+        """
+            Pull the latest Drive copy of spreadsheet
+        """
+        gauth = GoogleAuth()
+        gauth.LoadCredentialsFile(GAUTH_CREDS_FILE)
+
+        if gauth.credentials is None:
+            gauth.LocalWebserverAuth()
+        elif gauth.access_token_expired:
+            gauth.Refresh()
+        else:
+            gauth.Authorize()
+
+        gauth.SaveCredentialsFile(GAUTH_CREDS_FILE)
+
+        drive = GoogleDrive(gauth)
+
+        query_string = "fullText contains '{}'".format(self.serial)
+        document = drive.ListFile({'q': query_string}).GetList()
+        xlsx = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        document[0].GetContentFile(file_name, mimetype=xlsx)
+
 
 class Update:
     """
@@ -114,15 +141,17 @@ def main():
     """
         Main driver
     """
-
-    if ARGS.xlsx:
+    if ARGS.download:
+        cobbler = Cobbler('', ARGS.serial)
+        cobbler.download_xlsx(cobbler.serial + '.xlsx')
+    elif ARGS.xlsx:
         cobbler = Cobbler(ARGS.xlsx, ARGS.serial)
         cobbler.parse_xlsx()
+        cobbler.write_patch()
     elif ARGS.csv:
         for csv_file in ARGS.csv:
             cobbler = Cobbler(csv_file, ARGS.serial)
             cobbler.parse_csv()
-
         cobbler.write_patch()
 
 if __name__ == "__main__":
