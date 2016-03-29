@@ -8,12 +8,14 @@ import csv
 import argparse
 from rom import Rom, RomLayout, TileLayout
 from ips import Ips, Hunk
+from openpyxl import load_workbook
 
 PARSER = argparse.ArgumentParser(description='IPS patch creator')
 PARSER.add_argument('--serial', dest='serial', default='DMG-NDJ',
                     help='ROM serial')
 PARSER.add_argument('--csv', dest='csv', nargs='+', default=['test.csv'],
                     help='CSV input list')
+PARSER.add_argument('--xlsx', dest='xlsx', help='XLSX input list')
 PARSER.add_argument('--patch', dest='patch', default='test.ips',
                     help='Patch file name')
 
@@ -24,8 +26,8 @@ class Cobbler:
     """
         Someone to put it all together
     """
-    def __init__(self, csv_input, serial):
-        self.input = csv_input
+    def __init__(self, file_input, serial):
+        self.input = file_input
         self.serial = serial
         self.ips = Ips()
         self.rom = Rom()
@@ -42,6 +44,29 @@ class Cobbler:
                     update = Update(int(row['Start'], 16),
                                     int(row['End'], 16),
                                     row['Edited'])
+                    update.byte_data = update.convert_to_tile(self.serial)
+                    hunk = Hunk(update.start, update.length, update.byte_data)
+                    self.ips.add_hunk(hunk)
+
+    def parse_xlsx(self):
+        """
+            Given a xlsx create Updates and fetch tiles
+        """
+        wb_ = load_workbook(self.input)
+        sheet_titles = ['Main Story', 'Title Screen',
+                        'Story Mode Character Select', 'Stage 3-4 Story',
+                        'Stage 6-7 Story', 'Ending']
+
+        for sheet_name in sheet_titles:
+            sheet = wb_.get_sheet_by_name(sheet_name)
+            cells = sheet['A2:I20']
+            print sheet_name
+
+            for cel in cells:
+                if cel[8].value == 'Y':
+                    update = Update(int(cel[0].value, 16),
+                                    int(cel[1].value, 16),
+                                    cel[4].value)
                     update.byte_data = update.convert_to_tile(self.serial)
                     hunk = Hunk(update.start, update.length, update.byte_data)
                     self.ips.add_hunk(hunk)
@@ -89,7 +114,12 @@ def main():
     """
     for csv_file in ARGS.csv:
         cobbler = Cobbler(csv_file, ARGS.serial)
-        cobbler.parse_csv()
+
+        if ARGS.xlsx:
+            cobbler.parse_xlsx()
+        else:
+            cobbler.parse_csv()
+
         cobbler.write_patch()
 
 if __name__ == "__main__":
