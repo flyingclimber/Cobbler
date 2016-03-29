@@ -13,8 +13,7 @@ from openpyxl import load_workbook
 PARSER = argparse.ArgumentParser(description='IPS patch creator')
 PARSER.add_argument('--serial', dest='serial', default='DMG-NDJ',
                     help='ROM serial')
-PARSER.add_argument('--csv', dest='csv', nargs='+', default=['test.csv'],
-                    help='CSV input list')
+PARSER.add_argument('--csv', dest='csv', nargs='+', help='CSV input list')
 PARSER.add_argument('--xlsx', dest='xlsx', help='XLSX input list')
 PARSER.add_argument('--patch', dest='patch', default='test.ips',
                     help='Patch file name')
@@ -60,7 +59,6 @@ class Cobbler:
         for sheet_name in sheet_titles:
             sheet = wb_.get_sheet_by_name(sheet_name)
             cells = sheet['A2:I20']
-            print sheet_name
 
             for cel in cells:
                 if cel[8].value == 'Y':
@@ -112,12 +110,13 @@ def main():
     """
         Main driver
     """
-    for csv_file in ARGS.csv:
-        cobbler = Cobbler(csv_file, ARGS.serial)
 
-        if ARGS.xlsx:
-            cobbler.parse_xlsx()
-        else:
+    if ARGS.xlsx:
+        cobbler = Cobbler(ARGS.xlsx, ARGS.serial)
+        cobbler.parse_xlsx()
+    elif ARGS.csv:
+        for csv_file in ARGS.csv:
+            cobbler = Cobbler(csv_file, ARGS.serial)
             cobbler.parse_csv()
 
         cobbler.write_patch()
