@@ -7,21 +7,7 @@
 import struct
 
 
-class Patch:
-    """
-        High level view of a patch
-    """
-    def __init__(self):
-        pass
-
-    def create_patch(self, file_name):
-        """
-            Write a patch file to disk
-        """
-        pass
-
-
-class Ips(Patch):
+class Ips:
     """
         Patch conforming to http://zerosoft.zophar.net/ips.php
     """
